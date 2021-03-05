@@ -27,7 +27,7 @@ public class MyThread extends AsyncTask<String, Void, String> {
             Log.i("INFO", "doInBackground: 0");
             BufferedReader inFromServer = new BufferedReader(
                     new InputStreamReader(clientSocket.getInputStream()));
-            outToServer.writeBytes(inFromServer.readLine());
+            outToServer.writeBytes(inFromUser.readLine());
             Log.i("INFO", "doInBackground: 1");
 
             returnValue = inFromServer.readLine();
