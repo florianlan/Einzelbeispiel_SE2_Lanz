@@ -2,11 +2,18 @@ package com.example.einzelbeispiel_lanz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
             String input = matNumber.getText().toString();
 
             if (isValidInput(input)) {
-                new MyThread().execute(matNumber.getText().toString());
+                MyThread thread = new MyThread();
+                AsyncTask i = thread.execute(matNumber.getText().toString());
 
             }
 
@@ -67,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String calculate(String s) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         List<Integer> notPrime = new ArrayList<>();
         notPrime.add(0);
         notPrime.add(1);
@@ -80,13 +88,54 @@ public class MainActivity extends AppCompatActivity {
             for (int j = 0; j < s.length(); j++) {
                 int temp = s.charAt(j) - '0';
                 if (temp == i) {
-                    result += i;
+                    result.append(i);
                 }
             }
         }
 
-        return result;
+        return result.toString();
     }
 
+    private void setText(String s) {
+        runOnUiThread(() -> showResult.setText(s));
+    }
+
+
+    /**
+     * Thread for the tcp call
+     */
+    public class MyThread extends AsyncTask<String, Void, String> {
+        Socket clientSocket;
+        DataOutputStream outToServer;
+        String ip, matNumber;
+        int port;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            ip = "se2-isys.aau.at";
+            port = 53212;
+            matNumber = strings[0];
+            try {
+                clientSocket = new Socket(ip, port);
+
+                outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
+                BufferedReader inFromServer = new BufferedReader(
+                        new InputStreamReader(clientSocket.getInputStream()));
+
+                outToServer.writeBytes(matNumber + '\n');
+
+                setText(inFromServer.readLine());
+
+                outToServer.close();
+                clientSocket.close();
+
+            } catch (IOException ioException) {
+                Log.e("ERROR", "doInBackground: Error while connecting", ioException);
+            }
+
+            return null;
+        }
+    }
 
 }
