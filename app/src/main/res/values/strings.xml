@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Einzelbeispiel_Lanz</string>
+    <string name="button">Abschicken</string>
+    <string name="enterMat">Gib deine Matrikelnummer ein</string>
+    <string name="answerServer">Antwort vom Server</string>
+    <string name="hintMatEntry">11254998 (8 digits)</string>
 </resources>
