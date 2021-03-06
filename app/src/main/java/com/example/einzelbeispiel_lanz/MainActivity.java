@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (isValidInput(input)) {
                 MyThread thread = new MyThread();
-                AsyncTask i = thread.execute(matNumber.getText().toString());
+                thread.execute(matNumber.getText().toString());
 
             }
 
